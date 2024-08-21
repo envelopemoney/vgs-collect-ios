@@ -24,7 +24,7 @@ extension VGSCollect {
     */
   public func sendData(path: String, method: VGSCollectHTTPMethod = .post, routeId: String? = nil, extraData: [String: Any]? = nil, requestOptions: VGSCollectRequestOptions = VGSCollectRequestOptions(), completion block: @escaping (VGSResponse) -> Void) {
     
-        print("=== VGS COLLECT OVERRIDE ===")
+        var errLog = "=== VGS COLLECT OVERRIDE ===\n"
       
         // Content analytics.
         var content: [String] = ["textField"]
@@ -38,7 +38,7 @@ extension VGSCollect {
 				let fieldMappingPolicy = requestOptions.fieldNameMappingPolicy
 
 				content.append(fieldMappingPolicy.analyticsName)
-        if let error = validateStoredInputData() {
+        if let error = validateStoredInputData(errLog) {
           
           VGSAnalyticsClient.shared.trackFormEvent(self.formAnalyticsDetails, type: .beforeSubmit, status: .failed, extraData: [ "statusCode": error.code, "content": content])
           
@@ -50,9 +50,9 @@ extension VGSCollect {
 
         VGSAnalyticsClient.shared.trackFormEvent(self.formAnalyticsDetails, type: .beforeSubmit, status: .success, extraData: [ "statusCode": 200, "content": content])
     
-        print(body)
-        print(content)
-        print("=== ==================== ===")
+//        errLog.append("\(body)")
+//        errLog.append("\(content)")
+//        errLog.append("=== ==================== ===")
     
 //        block(.failure(999, nil, nil, nil))
     
@@ -69,6 +69,7 @@ extension VGSCollect {
               VGSAnalyticsClient.shared.trackFormEvent(strongSelf.formAnalyticsDetails, type: .submit, status: .failed, extraData: ["statusCode": code, "error": errorMessage])
             }
         }
+          
         block(response)
       }
     }
@@ -190,7 +191,7 @@ extension VGSCollect {
     let method = VGSCollectHTTPMethod.post
     
     // Check fields validation status
-    if let error = validateStoredInputData() {
+    if let error = validateStoredInputData("") {
       VGSAnalyticsClient.shared.trackFormEvent(self.formAnalyticsDetails, type: .beforeSubmit, status: .failed, extraData: [ "statusCode": error.code, "upstream": "tokenization"])
       block(.failure(error.code, nil, nil, error))
       return
