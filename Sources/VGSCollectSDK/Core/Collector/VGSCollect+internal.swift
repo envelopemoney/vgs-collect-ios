@@ -26,17 +26,20 @@ internal extension VGSCollect {
     }
   
     /// Validate stored textfields input data
-    func validateStoredInputData() -> VGSError? {
-        return validate(storage.textFields)
+  func validateStoredInputData(_ errLog: String) -> VGSError? {
+        return validate(storage.textFields, errLog)
     }
     
     /// Validate specific textfields input data
-    func validate(_ input: [VGSTextField]) -> VGSError? {
+  func validate(_ input: [VGSTextField], _ errLog: String) -> VGSError? {
         var isRequiredErrorFields = [String]()
         var isRequiredValidOnlyErrorFields = [String]()
+      
+        var errLog = errLog
+        errLog.append("=== Total input to validate \(input.count)\n")
         
         for textField in input {
-          print("=== Attempt to validate \(textField.fieldName) \(textField.fieldType) \(textField.textField.getSecureRawText) isRequired: \(textField.isRequired) isNilOrEmpty: \(textField.textField.getSecureRawText.isNilOrEmpty) isRequiredValidOnly \(textField.isRequiredValidOnly) isValid \(textField.state.isValid)")
+            errLog.append("=== Attempt to validate \(textField.fieldName) \(textField.fieldType) \(textField.textField.getSecureRawText)\nisRequired: \(textField.isRequired)\nisNilOrEmpty: \(textField.textField.getSecureRawText.isNilOrEmpty)\nisRequiredValidOnly \(textField.isRequiredValidOnly)\nisValid \(textField.state.isValid)\n")
             if textField.isRequired, textField.textField.getSecureRawText.isNilOrEmpty {
                 isRequiredErrorFields.append(textField.fieldName)
             }
@@ -48,7 +51,7 @@ internal extension VGSCollect {
         var errorFields = [String: [String]]()
         if isRequiredErrorFields.count > 0 {
         
-            print("=== VGS validation failed because required field isNilOrEmpty \(isRequiredErrorFields)")
+            errLog.append("=== VGS validation failed because required field isNilOrEmpty \(isRequiredErrorFields)\n")
           
             let eventText = "NOT VALID FIELDS CONTENT!!!. Next fields configuration set as **isRequired** but fields' content is **nil** or **empty**: \(isRequiredErrorFields)"
             let event = VGSLogEvent(level: .warning, text: eventText, severityLevel: .error)
@@ -58,7 +61,7 @@ internal extension VGSCollect {
         }
         if isRequiredValidOnlyErrorFields.count > 0 {
           
-            print("=== VGS validation failed because requiredValid field is not valid \(isRequiredValidOnlyErrorFields)")
+            errLog.append("=== VGS validation failed because requiredValid field is not valid \(isRequiredValidOnlyErrorFields)\n")
           
             let eventText = "NOT VALID FIELDS CONTENT!!!. Next fields configuration set as **sRequiredValidOnly** but fields' content didn't pass validation: \(isRequiredValidOnlyErrorFields)"
             let event = VGSLogEvent(level: .warning, text: eventText, severityLevel: .error)
@@ -67,10 +70,10 @@ internal extension VGSCollect {
         }
         
         if errorFields.count > 0 {
-            print("=== VGS validation failed because errorFields \(errorFields)")
+            errLog.append("=== VGS validation failed because errorFields \(errorFields)\n")
           
             // swiftlint: disable superfluous_disable_command
-            return VGSError(type: .inputDataIsNotValid, userInfo: VGSErrorInfo(key: VGSSDKErrorInputDataIsNotValid, description: "Input data is not valid", extraInfo: errorFields))
+            return VGSError(type: .inputDataIsNotValid, userInfo: VGSErrorInfo(key: VGSSDKErrorInputDataIsNotValid, description: "Input data is not valid \(errLog)", extraInfo: errorFields))
             // swiftlint: enable superfluous_disable_command
         }
         return nil
