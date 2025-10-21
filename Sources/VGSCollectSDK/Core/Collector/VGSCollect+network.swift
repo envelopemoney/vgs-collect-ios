@@ -50,27 +50,50 @@ extension VGSCollect {
 
         VGSAnalyticsClient.shared.trackFormEvent(self.formAnalyticsDetails, type: .beforeSubmit, status: .success, extraData: [ "statusCode": 200, "content": content])
     
-//        errLog.append("\(body)")
-//        errLog.append("\(content)")
-//        errLog.append("=== ==================== ===")
-    
-//        block(.failure(999, nil, nil, nil))
-    
+        errLog.append("\(body)")
+        errLog.append("\(content)")
+        errLog.append("=== ==================== ===")
+        
         // Send request.
         apiClient.sendRequest(path: path, method: method, routeId: routeId, value: body) { [weak self](response ) in
+          
+          var responseWithLogging: VGSResponse? = nil
           
           // Analytics
           if let strongSelf = self {
             switch response {
             case .success(let code, _, _):
               VGSAnalyticsClient.shared.trackFormEvent(strongSelf.formAnalyticsDetails, type: .submit, extraData: ["statusCode": code, "content": content])
-            case .failure(let code, _, _, let error):
+              
+            case .failure(let code, let data, let res, let error):
               let errorMessage =  (error as NSError?)?.localizedDescription ?? ""
               VGSAnalyticsClient.shared.trackFormEvent(strongSelf.formAnalyticsDetails, type: .submit, status: .failed, extraData: ["statusCode": code, "error": errorMessage])
+//
+              // Attach our logging to this error
+              if let vgsError = error as? VGSError {
+                
+                responseWithLogging = .failure(
+                  code,
+                  data,
+                  res,
+                  VGSError(
+                    type: vgsError.type,
+                    userInfo: VGSErrorInfo(
+                      key: VGSSDKErrorInputDataIsNotValid,
+                      description: vgsError.description + " \(errLog)", // Attach validation logs
+                      extraInfo: vgsError.userInfo
+                    )
+                  )
+                )
+              }
             }
-        }
+          }
           
-        block(response)
+          if let responseWithLogging {
+            block(responseWithLogging)
+          } else {
+            block(response)
+          }
       }
     }
     
