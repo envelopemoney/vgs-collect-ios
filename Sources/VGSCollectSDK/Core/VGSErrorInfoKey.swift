@@ -48,3 +48,7 @@ public let VGSSDKErrorSourceNotAvailable: VGSErrorInfoKey = "VGSSDKErrorSourceNo
 // MARK: - Response errors
 /// Error key, used for errors when response for SDK API request is in format that not supported by SDK.
 public let VGSSDKErrorUnexpectedResponseDataFormat: VGSErrorInfoKey = "VGSSDKErrorUnexpectedResponseDataFormat"
+
+// MARK: - Response errors
+/// Custom error key
+public let VGSSDKErrorCustom: VGSErrorInfoKey = "VGSSDKErrorCustom"
