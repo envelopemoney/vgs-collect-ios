@@ -15,7 +15,7 @@ public typealias JsonData = [String: Any]
 public typealias HTTPHeaders = [String: String]
 
 /// Key-value data type, for internal use.
-internal typealias BodyData = [String: Any]
+typealias BodyData = [String: Any]
 
 /// HTTP request methods
 public enum VGSCollectHTTPMethod: String {

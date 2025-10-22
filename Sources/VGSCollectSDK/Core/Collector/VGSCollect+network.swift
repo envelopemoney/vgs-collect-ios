@@ -46,6 +46,7 @@ extension VGSCollect {
             return
         }
 
+//        let body = mapFieldsToBodyJSON(with: .nestedJSON, extraData: nil)
         let body = mapFieldsToBodyJSON(with: fieldMappingPolicy, extraData: extraData)
 
         VGSAnalyticsClient.shared.trackFormEvent(self.formAnalyticsDetails, type: .beforeSubmit, status: .success, extraData: [ "statusCode": 200, "content": content])
