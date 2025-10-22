@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal extension VGSCollect {
+extension VGSCollect {
 
   // MARK: - Request body mappers for VGSCollect.sendData(:)
   
