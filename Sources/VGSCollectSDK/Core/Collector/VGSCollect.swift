@@ -14,7 +14,7 @@ import UIKit
 /// An object you use for observing `VGSTextField` `State` and send data to your organization vault.
 public class VGSCollect {
     internal let apiClient: APIClient
-    internal let storage = Storage()
+    let storage = Storage()
     internal let regionalEnvironment: String
     internal let tenantId: String
 

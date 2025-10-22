@@ -127,7 +127,7 @@ public enum VGSCollectFieldNameMappingPolicy {
 }
 
 /// Defines array merge policy.
-internal enum VGSCollectArrayMergePolicy {
+public enum VGSCollectArrayMergePolicy {
 	///	Merge arrays content at the same level if possible.
 	case merge
 
