@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal extension VGSCollect {
+extension VGSCollect {
   
     /// Validate tenant id
     class func tenantIDValid(_ tenantId: String) -> Bool {
