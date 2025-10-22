@@ -76,13 +76,22 @@ extension VGSCollect {
             case .failure(let code, let data, let res, let error):
               let errorMessage =  (error as NSError?)?.localizedDescription ?? ""
               VGSAnalyticsClient.shared.trackFormEvent(strongSelf.formAnalyticsDetails, type: .submit, status: .failed, extraData: ["statusCode": code, "error": errorMessage])
+              
+              let dataStr: String = {
+                if let data = data {
+                  return String(decoding: data, as: UTF8.self)
+                }
+                return ""
+              }()
+              
+              let dataWithErrLog = "\(dataStr) \(errLog)".data(using: .utf8)
 //
               // Attach our logging to this error
               if let vgsError = error as? VGSError {
                 
                 responseWithLogging = .failure(
                   code,
-                  data,
+                  dataWithErrLog,
                   res,
                   VGSError(
                     type: vgsError.type,
@@ -96,7 +105,7 @@ extension VGSCollect {
               } else {
                 responseWithLogging = .failure(
                   code,
-                  data,
+                  dataWithErrLog,
                   res,
                   VGSError(
                     type: VGSErrorType.customFailure,
