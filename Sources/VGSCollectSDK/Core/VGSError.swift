@@ -38,8 +38,11 @@ public enum VGSErrorType: Int {
     /// When reponse data format is not supported
     case unexpectedResponseDataFormat = 1401
 
-		/// When VGS config URL is not valid.
-		case invalidConfigurationURL = 1480
+  /// When VGS config URL is not valid.
+  case invalidConfigurationURL = 1480
+  
+  /// Custom error
+  case customFailure = 1999
 }
 
 /// An error produced by `VGSCollectSDK`. Works similar to default `NSError` in iOS.

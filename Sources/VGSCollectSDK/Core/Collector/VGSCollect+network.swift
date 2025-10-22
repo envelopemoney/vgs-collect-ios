@@ -67,7 +67,6 @@ extension VGSCollect {
               
               if let data, let dataStr = String(data: data, encoding: .utf8) {
                 responseWithLogging = .success(code, "Success data was a str: \(dataStr) \(errLog)".data(using: .utf8), response)
-                return
               }
 
 //              print(string)
@@ -89,8 +88,22 @@ extension VGSCollect {
                     type: vgsError.type,
                     userInfo: VGSErrorInfo(
                       key: VGSSDKErrorInputDataIsNotValid,
-                      description: vgsError.description + " \(errLog)", // Attach validation logs
+                      description: vgsError.description + " \(errLog) \(errorMessage)", // Attach validation logs
                       extraInfo: vgsError.userInfo
+                    )
+                  )
+                )
+              } else {
+                responseWithLogging = .failure(
+                  code,
+                  data,
+                  res,
+                  VGSError(
+                    type: VGSErrorType.customFailure,
+                    userInfo: VGSErrorInfo(
+                      key: VGSSDKErrorCustom,
+                      description: "customFailure: \(errLog) \(errorMessage)", // Attach validation logs
+                      extraInfo: [:]
                     )
                   )
                 )
