@@ -62,8 +62,17 @@ extension VGSCollect {
           // Analytics
           if let strongSelf = self {
             switch response {
-            case .success(let code, _, _):
+            case .success(let code, let data, let response):
               VGSAnalyticsClient.shared.trackFormEvent(strongSelf.formAnalyticsDetails, type: .submit, extraData: ["statusCode": code, "content": content])
+              
+              if let data, let dataStr = String(data: data, encoding: .utf8) {
+                responseWithLogging = .success(code, "Success data was a str: \(dataStr) \(errLog)".data(using: .utf8), response)
+                return
+              }
+
+//              print(string)
+              
+//              responseWithLogging = .success(code, data, response)
               
             case .failure(let code, let data, let res, let error):
               let errorMessage =  (error as NSError?)?.localizedDescription ?? ""
